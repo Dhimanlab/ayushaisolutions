@@ -1,0 +1,266 @@
+/* ===========================
+   AYUSH AI SOLUTIONS
+   STYLE.CSS - PART 1
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#f4f7fb;
+    color:#333;
+    line-height:1.6;
+}
+
+/* Container */
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:auto;
+}
+
+/* Header */
+
+header{
+    background:#0d6efd;
+    color:white;
+    padding:18px 0;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+header .container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo h2{
+    font-size:28px;
+    font-weight:bold;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+}
+
+nav ul li{
+    margin-left:25px;
+}
+
+nav ul li a{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+    transition:.3s;
+}
+
+nav ul li a:hover,
+nav ul li a.active{
+    color:#ffd54f;
+}
+
+.login-btn{
+    background:white;
+    color:#0d6efd !important;
+    padding:8px 18px;
+    border-radius:6px;
+}
+
+.login-btn:hover{
+    background:#ffd54f;
+    color:#000 !important;
+}
+
+/* Hero */
+
+.hero{
+    background:linear-gradient(135deg,#0d6efd,#4dabf7);
+    color:white;
+    text-align:center;
+    padding:90px 20px;
+}
+
+.hero h1{
+    font-size:48px;
+    margin-bottom:20px;
+}
+
+.hero p{
+    font-size:20px;
+    max-width:800px;
+    margin:auto;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:30px;
+    background:#ffd54f;
+    color:#000;
+    padding:14px 30px;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.btn:hover{
+    background:white;
+}/* ===========================
+   STYLE.CSS - PART 2
+=========================== */
+
+/* Sections */
+
+.features,
+.services,
+.contact-preview,
+.testimonials{
+    padding:70px 20px;
+    text-align:center;
+}
+
+.features h2,
+.services h2,
+.contact-preview h2,
+.testimonials h2{
+    font-size:36px;
+    color:#0d6efd;
+    margin-bottom:40px;
+}
+
+/* Cards */
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:25px;
+    margin-top:20px;
+}
+
+.card{
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+.card h3{
+    color:#0d6efd;
+    margin-bottom:15px;
+    font-size:24px;
+}
+
+.card p{
+    color:#555;
+}
+
+/* Forms */
+
+form{
+    max-width:600px;
+    margin:30px auto;
+}
+
+form input,
+form textarea{
+    width:100%;
+    padding:15px;
+    margin-bottom:18px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+}
+
+form button{
+    width:100%;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    padding:15px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:18px;
+    transition:.3s;
+}
+
+form button:hover{
+    background:#084298;
+}
+
+label{
+    display:block;
+    margin-bottom:15px;
+    text-align:left;
+}
+
+/* Footer */
+
+footer{
+    background:#111827;
+    color:white;
+    text-align:center;
+    padding:40px 20px;
+}
+
+footer h2{
+    margin-bottom:15px;
+}
+
+footer p{
+    margin:10px 0;
+}
+
+footer hr{
+    margin:20px auto;
+    width:80%;
+    border:1px solid #444;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+header .container{
+    flex-direction:column;
+}
+
+nav ul{
+    flex-direction:column;
+    margin-top:20px;
+    text-align:center;
+}
+
+nav ul li{
+    margin:10px 0;
+}
+
+.hero h1{
+    font-size:34px;
+}
+
+.hero p{
+    font-size:18px;
+}
+
+.features h2,
+.services h2,
+.contact-preview h2,
+.testimonials h2{
+    font-size:28px;
+}
+
+}
