@@ -3,15 +3,16 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 app = Flask(_name_)
-# Secure fallback key for managing user session cookies
 app.secret_key = os.environ.get('SECRET_KEY', 'ayush_dhiman_kangra_ai_secure_2026')
 
 DB_FILE = 'database.db'
 
 def init_db():
-    """Initializes the database and creates the messages table if it doesn't exist."""
+    """Initializes a universal multi-business tracking ledger database system."""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
+    
+    # 📬 Universal Client Contact Inquiry Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS contact_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,10 +23,23 @@ def init_db():
             submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    
+    # 📊 Universal Business Transactions & Ledger Table (Works for all industries)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS business_ledger (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            client_name TEXT NOT NULL,
+            business_type TEXT NOT NULL,
+            item_description TEXT NOT NULL,
+            amount_due REAL DEFAULT 0.0,
+            payment_status TEXT DEFAULT 'Unpaid',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     conn.commit()
     conn.close()
 
-# Initialize the storage database tables instantly on startup
+# Initialize global tracking tables instantly on application deployment
 init_db()
 
 # 🏠 Main Landing Page Route
@@ -57,7 +71,6 @@ def contact():
         phone = request.form.get('phone')
         message = request.form.get('message')
         
-        # Save contact form submission securely into the database
         try:
             conn = sqlite3.connect(DB_FILE)
             cursor = conn.cursor()
@@ -68,7 +81,7 @@ def contact():
             conn.commit()
             conn.close()
             flash(f"Thank you {name}! Your message has been saved and received by Ayush Dhiman (Kangra).")
-        except Exception as e:
+        except Exception:
             flash("An error occurred while saving your message. Please try again.")
             
         return redirect(url_for('home'))
@@ -81,7 +94,6 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
-        # Administrative owner credentials configuration for Ayush Dhiman
         if username == "ayush" and password == "kangra123":
             session['logged_in'] = True
             session['username'] = "Ayush Dhiman"
@@ -92,22 +104,68 @@ def login():
             
     return render_template('login.html')
 
-# 📊 Protected Dashboard Panel Route with Database Inbox Viewer
+# 📊 Protected Dashboard Control Gateway Panel
 @app.route('/dashboard')
 def dashboard():
     if not session.get('logged_in'):
         flash("Please log in to access the dashboard view panel.")
         return redirect(url_for('login'))
     
-    # Retrieve all contact form messages from the database to display to Ayush
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
+    
+    # 1. Fetch live client message requests
     cursor.execute('SELECT * FROM contact_messages ORDER BY submitted_at DESC')
     messages = cursor.fetchall()
+    
+    # 2. Fetch all universal business billing ledger rows
+    cursor.execute('SELECT * FROM business_ledger ORDER BY created_at DESC')
+    records = cursor.fetchall()
+    
+    # 3. Aggregate calculated metric totals for real-time numeric badges
+    cursor.execute('SELECT COUNT(*) FROM contact_messages')
+    msg_count_res = cursor.fetchone()
+    msg_count = msg_count_res[0] if msg_count_res else 0
+    
+    cursor.execute('SELECT COUNT(*) FROM business_ledger')
+    record_count_res = cursor.fetchone()
+    record_count = record_count_res[0] if record_count_res else 0
+    
+    cursor.execute("SELECT SUM(amount_due) FROM business_ledger WHERE payment_status = 'Unpaid'")
+    unpaid_res = cursor.fetchone()
+    total_unpaid = unpaid_res[0] if unpaid_res and unpaid_res[0] is not None else 0.0
+    
     conn.close()
     
-    return render_template('dashboard.html', messages=messages)
+    return render_template('dashboard.html', messages=messages, records=records, msg_count=msg_count, record_count=record_count, total_unpaid=total_unpaid)
+
+# 🧾 Add Universal Record Action Router Handler (Supports any enterprise)
+@app.route('/dashboard/add_record', methods=['POST'])
+def add_business_record():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+        
+    c_name = request.form.get('client_name')
+    b_type = request.form.get('business_type')
+    i_desc = request.form.get('item_description')
+    amt = request.form.get('amount_due', 0.0)
+    status = request.form.get('payment_status', 'Unpaid')
+    
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO business_ledger (client_name, business_type, item_description, amount_due, payment_status)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (c_name, b_type, i_desc, amt, status))
+        conn.commit()
+        conn.close()
+        flash("New transaction invoice ledger logged into universal business records.")
+    except Exception:
+        flash("Failed to store general transaction entry block.")
+        
+    return redirect(url_for('dashboard'))
 
 # 🚪 Log Out Session Destroyer Route
 @app.route('/logout')
