@@ -123,7 +123,7 @@ def dashboard():
     cursor.execute('SELECT * FROM business_ledger ORDER BY created_at DESC')
     records = cursor.fetchall()
     
-    # 3. Aggregate calculated metric totals for real-time numeric badges
+    # 3. Aggregate calculated metric totals safely
     cursor.execute('SELECT COUNT(*) FROM contact_messages')
     msg_count_res = cursor.fetchone()
     msg_count = msg_count_res[0] if msg_count_res else 0
