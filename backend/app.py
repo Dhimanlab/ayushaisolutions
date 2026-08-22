@@ -1,9 +1,32 @@
 import os
+import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 app = Flask(_name_)
 # Secure fallback key for managing user session cookies
 app.secret_key = os.environ.get('SECRET_KEY', 'ayush_dhiman_kangra_ai_secure_2026')
+
+DB_FILE = 'database.db'
+
+def init_db():
+    """Initializes the database and creates the messages table if it doesn't exist."""
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS contact_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            phone TEXT,
+            message TEXT NOT NULL,
+            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# Initialize the storage database tables instantly on startup
+init_db()
 
 # 🏠 Main Landing Page Route
 @app.route('/')
@@ -34,8 +57,20 @@ def contact():
         phone = request.form.get('phone')
         message = request.form.get('message')
         
-        # Injects a personalized success alert to the user interface layout
-        flash(f"Thank you {name}! Your message has been received by Ayush Dhiman (Kangra).")
+        # Save contact form submission securely into the database
+        try:
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO contact_messages (name, email, phone, message)
+                VALUES (?, ?, ?, ?)
+            ''', (name, email, phone, message))
+            conn.commit()
+            conn.close()
+            flash(f"Thank you {name}! Your message has been saved and received by Ayush Dhiman (Kangra).")
+        except Exception as e:
+            flash("An error occurred while saving your message. Please try again.")
+            
         return redirect(url_for('home'))
     return render_template('contact.html')
 
@@ -57,13 +92,22 @@ def login():
             
     return render_template('login.html')
 
-# 📊 Protected Dashboard Panel Route
+# 📊 Protected Dashboard Panel Route with Database Inbox Viewer
 @app.route('/dashboard')
 def dashboard():
     if not session.get('logged_in'):
         flash("Please log in to access the dashboard view panel.")
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+    
+    # Retrieve all contact form messages from the database to display to Ayush
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM contact_messages ORDER BY submitted_at DESC')
+    messages = cursor.fetchall()
+    conn.close()
+    
+    return render_template('dashboard.html', messages=messages)
 
 # 🚪 Log Out Session Destroyer Route
 @app.route('/logout')
