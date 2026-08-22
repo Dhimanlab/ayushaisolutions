@@ -2,17 +2,17 @@ import os
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = os.environ.get('SECRET_KEY', 'ayush_dhiman_kangra_ai_secure_2026')
 
 DB_FILE = 'database.db'
 
 def init_db():
-    """Initializes a universal multi-business tracking ledger database system."""
+    """Initializes clean database table paths layout structures."""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
-    # 📬 Universal Client Contact Inquiry Table
+    # 📬 Re-create Universal Client Inquiry Inbox Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS contact_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,7 +24,7 @@ def init_db():
         )
     ''')
     
-    # 📊 Universal Business Transactions & Ledger Table (Works for all industries)
+    # 📊 Re-create Universal Business Transactions & Ledger Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS business_ledger (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,7 +39,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Initialize global tracking tables instantly on application deployment
+# Initialize tables cleanly on application boot sequence execution loops
 init_db()
 
 # 🏠 Main Landing Page Route
@@ -111,22 +111,26 @@ def dashboard():
         flash("Please log in to access the dashboard view panel.")
         return redirect(url_for('login'))
     
-    # Raw value fetch to avoid string calculation failure checks
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
+    # Safely calculate total messages count and isolate index
     cursor.execute('SELECT COUNT(*) FROM contact_messages')
-    msg_count = cursor.fetchone()[0]
+    res1 = cursor.fetchone()
+    msg_count = res1[0] if res1 else 0
     
+    # Safely calculate total transaction logs count and isolate index
     cursor.execute('SELECT COUNT(*) FROM business_ledger')
-    record_count = cursor.fetchone()[0]
+    res2 = cursor.fetchone()
+    record_count = res2[0] if res2 else 0
     
+    # Safely calculate total uncollected revenue value float indices
     cursor.execute("SELECT SUM(amount_due) FROM business_ledger WHERE payment_status = 'Unpaid'")
-    unpaid_res = cursor.fetchone()[0]
-    total_unpaid = unpaid_res if unpaid_res is not None else 0.0
+    res3 = cursor.fetchone()
+    total_unpaid = res3[0] if res3 and res3[0] is not None else 0.0
     conn.close()
     
-    # Dictionary collection logic for rendering item logs loop matrices safely
+    # Fetch lists inside separate stream to allow safe rendering row logic arrays
     conn_list = sqlite3.connect(DB_FILE)
     conn_list.row_factory = sqlite3.Row
     cursor_list = conn_list.cursor()
@@ -174,5 +178,5 @@ def logout():
     flash("You have successfully logged out.")
     return redirect(url_for('login'))
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True)
