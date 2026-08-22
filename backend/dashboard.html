@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Control Panel | Ayush AI Solutions</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1e293b;
+            color: white;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+            box-sizing: border-box;
+        }
+        .sidebar-brand {
+            padding: 10px 20px 20px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .sidebar-menu li a {
+            display: block;
+            padding: 12px 20px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active {
+            background-color: #334155;
+            color: white;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+        .top-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .logout-btn {
+            background-color: #ef4444;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border-top: 4px solid #007bff;
+        }
+        .stat-card.ledger { border-top-color: #10b981; }
+        .stat-card.revenue { border-top-color: #ef4444; }
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #64748b;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .grid-sections {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+        @media (max-width: 1024px) {
+            .grid-sections { grid-template-columns: 1fr; }
+        }
+        .app-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            margin-bottom: 30px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-row input, .form-row select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .btn-add {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        th { background-color: #f8fafc; color: #475569; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Logo" style="height: 30px; border-radius: 4px;">
+        <span>Ayush AI Controls</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/dashboard" class="active">📊 Universal Engine</a></li>
+        <li><a href="#">🧾 Billing Invoices</a></li>
+        <li><a href="#">📦 Stock Manager</a></li>
+        <li><a href="/" style="border-top: 1px solid #334155; margin-top: 20px;">🏠 Back to Website</a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+    <div class="top-navbar">
+        <div style="font-weight: bold; color: #334155;">
+            Ayush AI Multi-Business Workspace | Developer: <strong>{{ session.get('username', 'Ayush Dhiman') }}</strong>
+        </div>
+        <a href="/logout" class="logout-btn">Sign Out</a>
+    </div>
+
+    <!-- Universal Statistics Badges -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Website Messages Inbox</h3>
+            <div class="value">{{ msg_count if msg_count else 0 }}</div>
+        </div>
+        <div class="stat-card ledger">
+            <h3>Total Business Records Logged</h3>
+            <div class="value">{{ record_count if record_count else 0 }}</div>
+        </div>
+        <div class="stat-card revenue">
+            <h3>Outstanding Ledger Receivables</h3>
+            <div class="value">₹{{ total_unpaid if total_unpaid and total_unpaid is not none else '0.00' }}</div>
+        </div>
+    </div>
+
+    <!-- Alert Notifications -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div style="background-color: #e0f2fe; color: #0369a1; padding: 12px; margin-bottom: 25px; border-radius: 6px; font-weight: bold; border: 1px solid #bae6fd;">
+              {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="grid-sections">
+        
+        <!-- Left Section: Universal Multi-Business Tracker Ledger -->
+        <div class="app-panel">
+            <h2>🏢 Universal Enterprise Ledger Dashboard</h2>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Log, query, and invoice accounts for any store, billing setup, or specialized inventory layout.</p>
+            
+            <form action="/dashboard/add_record" method="POST" style="margin-bottom: 25px; background-color: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div class="form-row">
+                    <input type="text" name="client_name" placeholder="Client, Store, or Officer Name" required>
+                    
+                    <select name="business_type" required>
+                        <option value="" disabled selected>Select Enterprise Category</option>
+                        <option value="Officer Mess Logistics">Officer's Mess Logistics</option>
+                        <option value="Retail & GST Billing">Retail & GST Billing</option>
+                        <option value="Inventory Warehouse">Inventory Warehouse</option>
+                        <option value="Custom IT Client">Custom IT Client</option>
+                        <option value="Other Business Service">Other Business Service</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <input type="text" name="item_description" placeholder="Description (e.g., Monthly Expenditure, Stock Supply Order)" required>
+                    <input type="number" step="0.01" name="amount_due" placeholder="Amount (₹)" required>
+                    
+                    <select name="payment_status">
+                        <option value="Unpaid">Unpaid Invoice</option>
+                        <option value="Paid">Fully Paid</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-add">Save Ledger Transaction Record</button>
+            </form>
+
+            <h3>Active Universal Ledger Streams</h3>
+            {% if records %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Account Name</th>
+                            <th>Business Category</th>
+                            <th>Description Tracker</th>
+                            <th>Balance Statement</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rec in records %}
+                            <tr>
+                                <td><strong>{{ rec.client_name }}</strong></td>
+                                <td><span style="background-color: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; color: #475569;">{{ rec.business_type }}</span></td>
+                                <td>{{ rec.item_description }}</td>
+                                <td style="font-weight: bold; color: #1e293b;">₹{{ rec.amount_due }}</td>
+                                <td>
+                                    <span style="color: {{ 'white' if rec.payment_status == 'Unpaid' else '#065f46' }}; background-color: {{ '#ef4444' if rec.payment_status == 'Unpaid' else '#d1fae5' }}; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                                        {{ rec.payment_status }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
