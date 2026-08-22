@@ -111,32 +111,32 @@ def dashboard():
         flash("Please log in to access the dashboard view panel.")
         return redirect(url_for('login'))
     
+    # Raw value fetch to avoid string calculation failure checks
     conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
-    # 1. Fetch live client message requests
-    cursor.execute('SELECT * FROM contact_messages ORDER BY submitted_at DESC')
-    messages = cursor.fetchall()
-    
-    # 2. Fetch all universal business billing ledger rows
-    cursor.execute('SELECT * FROM business_ledger ORDER BY created_at DESC')
-    records = cursor.fetchall()
-    
-    # 3. Aggregate calculated metric totals safely extracting tuple indexes
     cursor.execute('SELECT COUNT(*) FROM contact_messages')
-    msg_count_res = cursor.fetchone()
-    msg_count = msg_count_res[0] if msg_count_res else 0
+    msg_count = cursor.fetchone()[0]
     
     cursor.execute('SELECT COUNT(*) FROM business_ledger')
-    record_count_res = cursor.fetchone()
-    record_count = record_count_res[0] if record_count_res else 0
+    record_count = cursor.fetchone()[0]
     
     cursor.execute("SELECT SUM(amount_due) FROM business_ledger WHERE payment_status = 'Unpaid'")
-    unpaid_res = cursor.fetchone()
-    total_unpaid = unpaid_res[0] if unpaid_res and unpaid_res[0] is not None else 0.0
-    
+    unpaid_res = cursor.fetchone()[0]
+    total_unpaid = unpaid_res if unpaid_res is not None else 0.0
     conn.close()
+    
+    # Dictionary collection logic for rendering item logs loop matrices safely
+    conn_list = sqlite3.connect(DB_FILE)
+    conn_list.row_factory = sqlite3.Row
+    cursor_list = conn_list.cursor()
+    
+    cursor_list.execute('SELECT * FROM contact_messages ORDER BY submitted_at DESC')
+    messages = cursor_list.fetchall()
+    
+    cursor_list.execute('SELECT * FROM business_ledger ORDER BY created_at DESC')
+    records = cursor_list.fetchall()
+    conn_list.close()
     
     return render_template('dashboard.html', messages=messages, records=records, msg_count=msg_count, record_count=record_count, total_unpaid=total_unpaid)
 
