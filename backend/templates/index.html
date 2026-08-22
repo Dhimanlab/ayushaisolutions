@@ -3,21 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Ayush AI Solutions</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 
 <header>
     <div class="container">
 
+        <!-- WEBSITE LOGO -->
         <div class="logo">
-    <a href="/">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Ayush AI Solutions" style="height: 45px;">
-    </a>
-</div>
+            <a href="/">
+                <img
+                    src="{{ url_for('static', filename='logo.png') }}"
+                    alt="Ayush AI Solutions Logo"
+                    style="height: 55px; width: auto;"
+                >
+            </a>
+        </div>
 
+        <!-- NAVIGATION -->
         <nav>
             <ul>
                 <li><a href="/">Home</a></li>
@@ -25,13 +33,17 @@
                 <li><a href="/products">Products</a></li>
                 <li><a href="/pricing">Pricing</a></li>
                 <li><a href="/contact">Contact</a></li>
-                <li><a href="/login" class="login-btn">Login</a></li>
+                <li>
+                    <a href="/login" class="login-btn">Login</a>
+                </li>
             </ul>
         </nav>
 
     </div>
 </header>
 
+
+<!-- HERO SECTION -->
 <section class="hero">
 
     <div class="hero-content">
@@ -52,6 +64,8 @@
 
 </section>
 
+
+<!-- FEATURES SECTION -->
 <section class="features">
 
     <h2>Why Choose Us?</h2>
@@ -92,37 +106,37 @@
 
     </div>
 
+</section><section class="services">
+
+    <h2>Our Services</h2>
+
+    <div class="feature-grid">
+
+        <div class="card">
+            <h3>AI Billing Software</h3>
+            <p>Create professional GST invoices with AI assistance.</p>
+        </div>
+
+        <div class="card">
+            <h3>Inventory Management</h3>
+            <p>Track stock, purchases and sales easily.</p>
+        </div>
+
+        <div class="card">
+            <h3>Officer's Mess Management</h3>
+            <p>Manage ration, guest bills and monthly expenditure.</p>
+        </div>
+
+        <div class="card">
+            <h3>Custom Software</h3>
+            <p>We develop software according to your business needs.</p>
+        </div>
+
+    </div>
+
 </section>
 
-<section class="services">
-
-<h2>Our Services</h2>
-
-<div class="feature-grid">
-
-<div class="card">
-<h3>AI Billing Software</h3>
-<p>Create professional GST invoices with AI assistance.</p>
-</div>
-
-<div class="card">
-<h3>Inventory Management</h3>
-<p>Track stock, purchases and sales easily.</p>
-</div>
-
-<div class="card">
-<h3>Officer's Mess Management</h3>
-<p>Manage ration, guest bills and monthly expenditure.</p>
-</div>
-
-<div class="card">
-<h3>Custom Software</h3>
-<p>We develop software according to your business needs.</p>
-</div>
-
-</div>
-
-</section><section class="testimonials">
+<section class="testimonials">
 
     <h2>What Our Clients Say</h2>
 
@@ -188,7 +202,7 @@
         <hr>
 
         <p>
-            © 2026 Ayush AI Solutions. All Rights Reserved.
+            ©️ 2026 Ayush AI Solutions. All Rights Reserved.
         </p>
 
     </div>
