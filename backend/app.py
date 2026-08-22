@@ -2,7 +2,7 @@ import os
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.secret_key = os.environ.get('SECRET_KEY', 'ayush_dhiman_kangra_ai_secure_2026')
 
 DB_FILE = 'database.db'
@@ -123,7 +123,7 @@ def dashboard():
     cursor.execute('SELECT * FROM business_ledger ORDER BY created_at DESC')
     records = cursor.fetchall()
     
-    # 3. Aggregate calculated metric totals safely
+    # 3. Aggregate calculated metric totals safely extracting tuple indexes
     cursor.execute('SELECT COUNT(*) FROM contact_messages')
     msg_count_res = cursor.fetchone()
     msg_count = msg_count_res[0] if msg_count_res else 0
@@ -174,5 +174,5 @@ def logout():
     flash("You have successfully logged out.")
     return redirect(url_for('login'))
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True)
