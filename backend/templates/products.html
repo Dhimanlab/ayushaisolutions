@@ -3,147 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Products | Ayush AI Solutions</title>
-
+    <title>Our Products | Ayush AI Solutions</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .products-hero {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .products-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            font-family: sans-serif;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .product-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-badge {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+        .product-card h3 {
+            margin: 10px 0;
+            color: #1e293b;
+        }
+        .product-card p {
+            color: #64748b;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        .btn-inquire {
+            display: block;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-    <div class="container">
+<header style="padding: 20px; border-bottom: 1px solid #eee;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <div class="logo">
-            <h2>Ayush AI Solutions</h2>
+            <a href="/">
+                <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Ayush AI Solutions Logo" style="height: 50px;">
+            </a>
         </div>
-
         <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/products">Products</a></li>
-                <li><a href="/pricing">Pricing</a></li>
-                <li><a href="/contact">Contact</a></li>
-                <li><a href="/login">Sign In</a></li>
-            </ul>
+            <a href="/" style="margin-right: 15px; text-decoration: none; color: #333;">Home</a>
+            <a href="/about" style="margin-right: 15px; text-decoration: none; color: #333;">About</a>
+            <a href="/products" style="margin-right: 15px; text-decoration: none; color: #007bff; font-weight: bold;">Products</a>
+            <a href="/pricing" style="margin-right: 15px; text-decoration: none; color: #333;">Pricing</a>
+            <a href="/contact" style="text-decoration: none; color: #333;">Contact</a>
         </nav>
     </div>
 </header>
 
-<main>
+<section class="products-hero">
+    <h1>Our AI Software Suite</h1>
+    <p>Smart tools built by Ayush Dhiman in Kangra to power your business workflow.</p>
+</section>
 
-    <section class="page-hero">
-        <div class="container">
-            <h1>Our Products</h1>
-            <p>Smart software solutions designed for modern businesses.</p>
-        </div>
-    </section>
-
-    <section class="products-section">
-        <div class="container">
-
-            <div class="products-grid">
-
-                <div class="product-card">
-                    <h2>AI Billing System</h2>
-
-                    <p>
-                        A smart billing solution designed to simplify
-                        billing, invoices, records and business operations.
-                    </p>
-
-                    <ul>
-                        <li>Easy billing management</li>
-                        <li>Invoice generation</li>
-                        <li>Customer records</li>
-                        <li>Business reports</li>
-                    </ul>
-
-                    <a href="/contact" class="btn">Learn More</a>
-                </div>
-
-                <div class="product-card">
-                    <h2>Inventory Management</h2>
-
-                    <p>
-                        Manage products, stock levels and inventory
-                        efficiently with an easy-to-use system.
-                    </p>
-
-                    <ul>
-                        <li>Stock management</li>
-                        <li>Product records</li>
-                        <li>Stock tracking</li>
-                        <li>Inventory reports</li>
-                    </ul>
-
-                    <a href="/contact" class="btn">Learn More</a>
-                </div>
-
-                <div class="product-card">
-                    <h2>Business Automation</h2>
-
-                    <p>
-                        Automate repetitive business tasks and improve
-                        productivity with intelligent software solutions.
-                    </p>
-
-                    <ul>
-                        <li>Workflow automation</li>
-                        <li>Task management</li>
-                        <li>Data processing</li>
-                        <li>Time-saving solutions</li>
-                    </ul>
-
-                    <a href="/contact" class="btn">Learn More</a>
-                </div><div class="product-card">
-                    <h2>Custom Software</h2>
-
-                    <p>
-                        Custom-built software solutions developed according
-                        to your specific business requirements.
-                    </p>
-
-                    <ul>
-                        <li>Custom features</li>
-                        <li>Business-specific solutions</li>
-                        <li>Modern user interface</li>
-                        <li>Flexible development</li>
-                    </ul>
-
-                    <a href="/contact" class="btn">Request a Solution</a>
-                </div>
-
+<div class="products-container">
+    <div class="products-grid">
+        
+        <!-- Product 1 -->
+        <div class="product-card">
+            <div>
+                <span class="product-badge">🛡️ Elite Logistics</span>
+                <h3>Officer's Mess Management</h3>
+                <p>Advanced system to track military and institutional ration accounts, automate monthly expenditure sheets, manage guest logs, and optimize catering workflows securely.</p>
             </div>
-
+            <a href="/contact" class="btn-inquire">Inquire Now</a>
         </div>
-    </section>
 
-</main>
+        <!-- Product 2 -->
+        <div class="product-card">
+            <div>
+                <span class="product-badge">📊 Automation</span>
+                <h3>AI Billing Engine</h3>
+                <p>Generate precise GST-compliant invoices instantly. Our smart layout features analyze inventory item lines automatically to minimize input human error during billing cycles.</p>
+            </div>
+            <a href="/contact" class="btn-inquire">Inquire Now</a>
+        </div>
 
-<footer>
-    <div class="container">
-
-        <h3>Ayush AI Solutions</h3>
-
-        <p>
-            AI Software Billing Solutions |
-            Inventory Management |
-            Custom Software Development
-        </p>
-
-        <p>9459200809</p>
-
-        <p>ayush0695792@rediffmail.com</p>
-
-        <hr>
-
-        <p>© 2026 Ayush AI Solutions. All Rights Reserved.</p>
+        <!-- Product 3 -->
+        <div class="product-card">
+            <div>
+                <span class="product-badge">📦 Enterprise Control</span>
+                <h3>Smart Stock & Inventory</h3>
+                <p>Real-time asset tracking designed to monitor item intake, record automated supply updates, and deploy alert systems before stock values fall below baseline levels.</p>
+            </div>
+            <a href="/contact" class="btn-inquire">Inquire Now</a>
+        </div>
 
     </div>
-</footer>
+</div>
 
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<footer style="text-align: center; padding: 20px; background: #333; color: white; margin-top: 60px; font-family: sans-serif;">
+    <p>© 2026 Ayush AI Solutions. Kangra, Himachal Pradesh.</p>
+</footer>
 
 </body>
 </html>
