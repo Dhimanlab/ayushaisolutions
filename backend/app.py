@@ -2,7 +2,7 @@ import os
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'ayush_dhiman_kangra_ai_secure_2026')
 
 DB_FILE = 'database.db'
@@ -178,5 +178,5 @@ def logout():
     flash("You have successfully logged out.")
     return redirect(url_for('login'))
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)
