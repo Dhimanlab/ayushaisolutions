@@ -176,15 +176,15 @@
     <div class="stats-grid">
         <div class="stat-card">
             <h3>Website Messages Inbox</h3>
-            <div class="value">{{ msg_count if msg_count else 0 }}</div>
+            <div class="value">{{ msg_count }}</div>
         </div>
         <div class="stat-card ledger">
             <h3>Total Business Records Logged</h3>
-            <div class="value">{{ record_count if record_count else 0 }}</div>
+            <div class="value">{{ record_count }}</div>
         </div>
         <div class="stat-card revenue">
             <h3>Outstanding Ledger Receivables</h3>
-            <div class="value">₹{{ total_unpaid if total_unpaid and total_unpaid is not none else '0.00' }}</div>
+            <div class="value">₹{{ total_unpaid }}</div>
         </div>
     </div>
 
@@ -258,3 +258,5 @@
                             </tr>
                         {% endfor %}
                     </tbody>
+                </table>
+            {% else %}
