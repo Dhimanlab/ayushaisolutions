@@ -1,5 +1,18 @@
 import os
 import io
+import sys
+
+# Safety Injection: Manually force pkg_resources path availability for Gunicorn
+try:
+    import pkg_resources
+except ImportError:
+    try:
+        import subprocess
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "setuptools==68.0.0"])
+        import pkg_resources
+    except Exception as e:
+        print(f"Setuptools injection logging warning: {e}")
+
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
@@ -8,12 +21,12 @@ from pypdf import PdfReader
 app = Flask(__name__)
 CORS(app)
 
-# Configure the classic Google AI engine using your secure environment variable
+# Configure the classic Google AI engine securely using your background environment token
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 if GEMINI_KEY:
     genai.configure(api_key=GEMINI_KEY)
 
-# Global memory holder for your active PDF text string
+# Active global memory string variable to safely handle user document text
 document_context = ""
 
 # ----------------- WEBSITE PAGE ROUTING -----------------
@@ -47,7 +60,7 @@ def upload_pdf():
         return jsonify({"error": "No file selected."}), 400
         
     try:
-        # Stream file binary text directly into structural string format
+        # Stream file binary text directly into structural string format without touching local server disk space
         pdf_stream = io.BytesIO(file.read())
         reader = PdfReader(pdf_stream)
         text = ""
@@ -56,14 +69,14 @@ def upload_pdf():
             
         document_context = text
 
-        # Free tier limitation check (prevents massive payload processing)
+        # Free tier token limitation check (prevents massive system payload processing)
         if len(document_context) > 12000:
             return jsonify({"error": "This document exceeds the limit for the Free Tier. Please upgrade to Premium!"}), 403
 
         if not document_context.strip():
             return jsonify({"error": "Could not extract text from this PDF. Ensure it's not a scanned image."}), 400
 
-        # Execute generation request using the classic generativeai module model
+        # Execute dynamic summary generation using the classic generativeai module model framework
         model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(
             f"Summarize this text concisely using structured bullet points:\n\n{document_context}"
