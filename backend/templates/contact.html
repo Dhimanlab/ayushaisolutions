@@ -3,67 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us | Ayush AI Solutions</title>
+    <title>Pricing Plans | Ayush AI Solutions</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        .contact-hero {
+        .pricing-hero {
             background-color: #007bff;
             color: white;
             text-align: center;
             padding: 50px 20px;
         }
-        .contact-container {
-            max-width: 900px;
+        .pricing-container {
+            max-width: 1200px;
             margin: 40px auto;
             padding: 0 20px;
             font-family: sans-serif;
+        }
+        .pricing-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+            align-items: stretch;
         }
-        @media (max-width: 768px) {
-            .contact-container { grid-template-columns: 1fr; }
-        }
-        .info-panel {
-            background-color: #f8f9fa;
-            padding: 30px;
-            border-radius: 8px;
-            border-top: 4px solid #007bff;
-        }
-        .form-panel {
+        .pricing-card {
             background: white;
-            padding: 30px;
-            border-radius: 8px;
             border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 35px 25px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: transform 0.2s;
         }
-        .form-group {
-            margin-bottom: 15px;
+        .pricing-card.popular {
+            border: 2px solid #007bff;
+            transform: scale(1.03);
         }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #4b5563;
+        .pricing-card.popular:hover {
+            transform: scale(1.03) translateY(-5px);
         }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 14px;
+        .pricing-card:hover {
+            transform: translateY(-5px);
         }
-        .submit-btn {
+        .popular-badge {
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
             background-color: #007bff;
             color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: bold;
+            text-transform: uppercase;
+        }
+        .plan-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        .price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0f172a;
+            margin: 15px 0;
+        }
+        .price span {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: normal;
+        }
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 25px 0;
+            text-align: left;
+        }
+        .features-list li {
+            padding: 8px 0;
+            color: #475569;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-select {
+            display: block;
+            text-align: center;
+            background-color: #1e293b;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
             border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .pricing-card.popular .btn-select {
+            background-color: #007bff;
+        }
+        .pricing-card.popular .btn-select:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -80,62 +124,80 @@
             <a href="/" style="margin-right: 15px; text-decoration: none; color: #333;">Home</a>
             <a href="/about" style="margin-right: 15px; text-decoration: none; color: #333;">About</a>
             <a href="/products" style="margin-right: 15px; text-decoration: none; color: #333;">Products</a>
-            <a href="/pricing" style="margin-right: 15px; text-decoration: none; color: #333;">Pricing</a>
-            <a href="/contact" style="text-decoration: none; color: #007bff; font-weight: bold;">Contact</a>
+            <a href="/pricing" style="margin-right: 15px; text-decoration: none; color: #007bff; font-weight: bold;">Pricing</a>
+            <a href="/contact" style="text-decoration: none; color: #333;">Contact</a>
         </nav>
     </div>
 </header>
 
-<section class="contact-hero">
-    <h1>Connect with Ayush AI Solutions</h1>
-    <p>Let's discuss automated setups for billing, inventory, or customized enterprise systems.</p>
+<section class="pricing-hero">
+    <h1>Simple, Transparent Plans</h1>
+    <p>Get reliable custom business licensing options engineered by Ayush Dhiman in Kangra.</p>
 </section>
 
-<div class="contact-container">
-    
-    <!-- Left Hand Business Information Details Column -->
-    <div class="info-panel">
-        <h2>Corporate Office</h2>
-        <p><strong>Developer:</strong> Ayush Dhiman</p>
-        <p><strong>Base Location:</strong> Kangra, Himachal Pradesh, India</p>
-        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-        <h3>Direct Contact Details</h3>
-        <p>📞 <strong>Phone:</strong> 9459200809</p>
-        <p>✉️ <strong>Email:</strong> ayush0695792@rediffmail.com</p>
-        <p style="font-size: 13px; color: #6b7280; margin-top: 20px;">
-            Our standard automated software deployment infrastructure operates 24/7 on cloud networks.
-        </p>
-    </div>
+<div class="pricing-container">
+    <div class="pricing-grid">
+        
+        <!-- Plan 1 -->
+        <div class="pricing-card">
+            <div>
+                <div class="plan-name">Standard Billing</div>
+                <div class="price">₹1,499 <span>/ month</span></div>
+                <p style="color: #64748b; font-size: 14px;">Perfect for growing local retail shops.</p>
+                <ul class="features-list">
+                    <li>✔️ Full GST Invoice Generation</li>
+                    <li>✔️ Automated Stock Inventory Alerts</li>
+                    <li>✔️ Standard Encrypted Local Storage</li>
+                    <li>✔️ High Performance UI Dashboard</li>
+                </ul>
+            </div>
+            <a href="/contact" class="btn-select">Get Started</a>
+        </div>
 
-    <!-- Right Hand Interactive Dynamic Inputs Submission Form Panel -->
-    <div class="form-panel">
-        <h2>Send a Message</h2>
-        <form action="/contact" method="POST">
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" name="name" placeholder="John Doe" required>
+        <!-- Plan 2 -->
+        <div class="pricing-card popular">
+            <div class="popular-badge">Most Popular</div>
+            <div>
+                <div class="plan-name">Enterprise Suite</div>
+                <div class="price">₹3,499 <span>/ month</span></div>
+                <p style="color: #64748b; font-size: 14px;">Complete logistics tool for heavy operations.</p>
+                <ul class="features-list">
+                    <li>✔️ Elite Officer's Mess Module Included</li>
+                    <li>✔️ Multi-User Login Authentications</li>
+                    <li>✔️ Automated Ration Calculation System</li>
+                    <li>✔️ Priority Cloud Server Deployments</li>
+                </ul>
             </div>
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" name="email" placeholder="john@example.com" required>
-            </div>
-            <div class="form-group">
-                <label>Phone Number (Optional)</label>
-                <input type="text" name="phone" placeholder="94592xxxxx">
-            </div>
-            <div class="form-group">
-                <label>Message Requirements</label>
-                <textarea name="message" rows="4" placeholder="Tell us about the software features your business needs..." required></textarea>
-            </div>
-            <button type="submit" class="submit-btn">Send Inquiry</button>
-        </form>
-    </div>
+            <a href="/contact" class="btn-select">Get Started</a>
+        </div>
 
+        <!-- Plan 3 -->
+        <div class="pricing-card">
+            <div>
+                <div class="plan-name">Custom Software</div>
+                <div class="price">Custom <span>Quotes</span></div>
+                <p style="color: #64748b; font-size: 14px;">Tailor-made solutions built to your strict specifications.</p>
+                <ul class="features-list">
+                    <li>✔️ Bespoke Logic Layer Features</li>
+                    <li>✔️ Full Proprietary Source Code Ownership</li>
+                    <li>✔️ Dynamic Third-Party API Integrations</li>
+                    <li>✔️ Dedicated 24/7 Server Maintenance Support</li>
+                </ul>
+            </div>
+            <a href="/contact" class="btn-select">Contact Us</a>
+        </div>
+
+    </div>
 </div>
 
 <footer style="text-align: center; padding: 20px; background: #333; color: white; margin-top: 60px; font-family: sans-serif;">
     <p>© 2026 Ayush AI Solutions. Kangra, Himachal Pradesh.</p>
 </footer>
+
+<!-- ==================== AYUSH AI CHATBOT ==================== -->
+<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/08/29/14/20260829142156-TVQCNN8L.js" defer></script>
+<!-- ======================================================== -->
 
 </body>
 </html>
