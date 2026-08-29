@@ -1,26 +1,25 @@
 import os
 import io
-from flask import Flask, render_template, request, jsonify, redirect, url_path_as_string
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-from google import genai
+import google.generativeai as genai
 from pypdf import PdfReader
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app)
 
-# Initialize the official Google GenAI Client
-# Render reads the GEMINI_API_KEY from your dashboard environment securely
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "DEVELOPMENT_MODE")
-ai_client = genai.Client(api_key=GEMINI_KEY)
+# Configure the classic Google AI engine using your secure environment variable
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
+if GEMINI_KEY:
+    genai.configure(api_key=GEMINI_KEY)
 
-# Memory storage to hold extracted document text
+# Global memory holder for your active PDF text string
 document_context = ""
 
 # ----------------- WEBSITE PAGE ROUTING -----------------
 
 @app.route('/')
 def index():
-    # Renders your landing page. If you don't have index.html, it defaults to login.
     try:
         return render_template('index.html')
     except:
@@ -64,10 +63,10 @@ def upload_pdf():
         if not document_context.strip():
             return jsonify({"error": "Could not extract text from this PDF. Ensure it's not a scanned image."}), 400
 
-        # Execute dynamic summary generation using Google Gemini 1.5 Flash
-        response = ai_client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=f"Summarize this text concisely using structured bullet points:\n\n{document_context}"
+        # Execute generation request using the classic generativeai module model
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content(
+            f"Summarize this text concisely using structured bullet points:\n\n{document_context}"
         )
         return jsonify({"summary": response.text})
         
@@ -89,9 +88,9 @@ def chat_pdf():
     
     try:
         # Prompt configuration forces Gemini to only look inside your uploaded PDF
-        response = ai_client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=f"Context Document:\n{document_context}\n\nQuestion: {question}\nAnswer the question strictly based on the text provided above."
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content(
+            f"Context Document:\n{document_context}\n\nQuestion: {question}\nAnswer the question strictly based on the text provided above."
         )
         return jsonify({"answer": response.text})
     except Exception as e:
@@ -99,6 +98,6 @@ def chat_pdf():
         return jsonify({"error": "AI provider service connection failed."}), 500
 
 # ----------------- EXECUTION SYSTEM ENGINE -----------------
-if _name_ == '_main_':
+if __name__ == '__main__':
     port_config = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port_config, debug=False)
