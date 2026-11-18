@@ -8,7 +8,7 @@ from flask_cors import CORS
 import google.generativeai as genai
 from pypdf import PdfReader
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app)
 
 # ========== CONFIG ==========
@@ -204,6 +204,6 @@ def chat_pdf():
         return jsonify({"error": "AI service failed."}), 500
 
 # ========== RUN ==========
-if _name_ == '_main_':
+if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
