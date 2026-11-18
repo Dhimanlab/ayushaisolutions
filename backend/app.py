@@ -1,5 +1,11 @@
 import os
 import io
+import re
+import sqlite3
+import smtplib
+from datetime import datetime
+from email.message import EmailMessage
+
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -11,7 +17,7 @@ from pypdf import PdfReader
 app = Flask(__name__)
 CORS(app)
 
-# ========== CONFIG ==========
+# ================= CONFIG =================
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'ayush-ai-solutions-super-secret-key-change-this')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ayushai.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -28,7 +34,7 @@ if GEMINI_KEY:
 
 document_context = ""
 
-# ========== USER MODEL ==========
+# ================= USER MODEL =================
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -52,7 +58,36 @@ def load_user(user_id):
 with app.app_context():
     db.create_all()
 
-# ========== PUBLIC PAGES ==========
+# ================= ENQUIRY & EMAIL SETUP =================
+DB_PATH = os.environ.get("ENQUIRY_DB", "enquiries.db")
+
+def init_enquiry_db():
+    with sqlite3.connect(DB_PATH) as db_conn:
+        db_conn.execute("""CREATE TABLE IF NOT EXISTS enquiries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, created_at TEXT, name TEXT,
+            phone TEXT, email TEXT, product TEXT, message TEXT)""")
+
+def send_alert_email(r):
+    host, user = os.environ.get("SMTP_HOST"), os.environ.get("SMTP_USER")
+    pw, to = os.environ.get("SMTP_PASS"), os.environ.get("ALERT_TO")
+    if not (host and user and pw and to):
+        return
+    m = EmailMessage()
+    m["Subject"] = "New enquiry from " + r["name"]
+    m["From"], m["To"] = user, to
+    m.set_content("Name: %s\nPhone: %s\nEmail: %s\nInterested in: %s\n\n%s" %
+                  (r["name"], r["phone"], r["email"] or "-", r["product"], r["message"] or "-"))
+    try:
+        with smtplib.SMTP(host, int(os.environ.get("SMTP_PORT", "587")), timeout=10) as s:
+            s.starttls()
+            s.login(user, pw)
+            s.send_message(m)
+    except Exception as e:
+        print("Email failed:", e)
+
+init_enquiry_db()
+
+# ================= PUBLIC PAGES =================
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -73,12 +108,38 @@ def pricing():
 def contact():
     return render_template('contact.html')
 
-# ========== AUTHENTICATION ==========
+@app.route('/programs')
+def programs():
+    return render_template('program.html')
+
+@app.route('/api/enquiry', methods=['POST'])
+def api_enquiry():
+    d = request.get_json(silent=True) or {}
+    if (d.get("website") or "").strip():
+        return jsonify(ok=True)
+    name = (d.get("name") or "").strip()[:80]
+    phone = re.sub(r"\D", "", d.get("phone") or "")[-10:]
+    email = (d.get("email") or "").strip()[:120]
+    product = (d.get("product") or "").strip()[:60]
+    message = (d.get("message") or "").strip()[:1000]
+    if not name:
+        return jsonify(ok=False, error="Please enter your name."), 400
+    if not re.fullmatch(r"[6-9]\d{9}", phone):
+        return jsonify(ok=False, error="Please enter a valid 10-digit mobile number."), 400
+    if email and not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+        return jsonify(ok=False, error="Please enter a valid email address."), 400
+    row = dict(name=name, phone=phone, email=email, product=product, message=message)
+    with sqlite3.connect(DB_PATH) as db_conn:
+        db_conn.execute(
+            "INSERT INTO enquiries (created_at,name,phone,email,product,message) VALUES (?,?,?,?,?,?)",
+            (datetime.utcnow().isoformat(timespec="seconds"), name, phone, email, product, message)
+        )
+    send_alert_email(row)
+    return jsonify(ok=True)# ================= AUTHENTICATION =================
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip().lower()
@@ -115,16 +176,12 @@ def register():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         remember = True if request.form.get('remember') else False
 
-        user = User.query.filter(
-            (User.username == username) | (User.email == username)
-        ).first()
-
+        user = User.query.filter((User.username == username) | (User.email == username)).first()
         if user and user.check_password(password):
             login_user(user, remember=remember)
             flash(f'Welcome back, {user.full_name or user.username}!', 'success')
@@ -147,63 +204,52 @@ def logout():
 def dashboard():
     return render_template('dashboard.html', user=current_user)
 
-# ========== AI ROUTES (kept from your original) ==========
+# ================= AI ROUTES =================
 @app.route('/api/upload', methods=['POST'])
 def upload_pdf():
     global document_context
     if 'pdf' not in request.files:
-        return jsonify({"error": "No file uploaded."}), 400
-
+        return jsonify({'error': 'No file uploaded.'}), 400
     file = request.files['pdf']
     if file.filename == '':
-        return jsonify({"error": "No file selected."}), 400
-
+        return jsonify({'error': 'No file selected.'}), 400
     try:
         pdf_stream = io.BytesIO(file.read())
         reader = PdfReader(pdf_stream)
         text = ""
         for page in reader.pages:
             text += page.extract_text() or ""
-
-        document_context = text
-
         if len(document_context) > 12000:
-            return jsonify({"error": "Document too large for free tier."}), 403
-
-        if not document_context.strip():
-            return jsonify({"error": "Could not extract text from PDF."}), 400
-
+            return jsonify({'error': 'Document too large for free tier.'}), 400
+        document_context = text
         model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(
             f"Summarize this text concisely using structured bullet points:\n\n{document_context}"
         )
-        return jsonify({"summary": response.text})
+        return jsonify({'summary': response.text})
     except Exception as e:
         print(f"PDF Error: {e}")
-        return jsonify({"error": "Unable to process document."}), 500
+        return jsonify({'error': 'Unable to process document.'}), 500
 
 @app.route('/api/chat', methods=['POST'])
 def chat_pdf():
     global document_context
     if not document_context:
-        return jsonify({"error": "Please upload a document first."}), 400
-
-    data = request.json or {}
+        return jsonify({'error': 'Please upload a document first.'}), 400
+    data = request.get_json() or {}
     question = data.get('question')
     if not question:
-        return jsonify({"error": "Question is empty."}), 400
-
+        return jsonify({'error': 'Question is empty.'}), 400
     try:
         model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(
-            f"Context Document:\n{document_context}\n\nQuestion: {question}\nAnswer strictly based on the document."
+            f"Context: {document_context}\nQuestion: {question}\nAnswer strictly based on the document."
         )
-        return jsonify({"answer": response.text})
+        return jsonify({'answer': response.text})
     except Exception as e:
         print(f"Chat Error: {e}")
-        return jsonify({"error": "AI service failed."}), 500
+        return jsonify({'error': 'AI service failed.'}), 500
 
-# ========== RUN ==========
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
