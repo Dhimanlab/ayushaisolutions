@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Tools - Ayush AI Solutions</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Arial,sans-serif;color:#1d2939;background:#f5f7fa}
+header{background:#fff;border-bottom:1px solid #d0d5dd;padding:10px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+header img{height:40px}
+header nav a{margin-right:14px;color:#1d4ed8;text-decoration:none;font-weight:600}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:26px;margin:20px 0 4px}
+h2{font-size:20px;margin:0 0 12px}
+.card{background:#fff;border:1px solid #d0d5dd;border-radius:10px;padding:20px;margin:20px 0}
+label{display:block;margin:12px 0 4px;font-size:14px;font-weight:600}
+input,select,textarea{width:100%;padding:10px;font-size:16px;border:1px solid #98a2b3;border-radius:6px;font-family:inherit}
+.row{display:flex;gap:10px}
+.row>div{flex:1}
+table{width:100%;margin-top:16px;border-collapse:collapse}
+td{padding:7px 0;border-bottom:1px solid #eaecf0}
+td:last-child{text-align:right}
+tr.tot td{font-weight:700;font-size:17px;border-bottom:0}
+button{margin-top:16px;width:100%;padding:12px;font-size:16px;font-weight:600;color:#fff;background:#1d4ed8;border:0;border-radius:6px;cursor:pointer}
+button:disabled{opacity:.6}
+.ok{color:#067647}
+.err{color:#b42318}
+.hp{position:absolute;left:-9999px}
+details{border-bottom:1px solid #d0d5dd;padding:12px 0}
+summary{cursor:pointer;font-weight:600}
+details p{margin:10px 0 0;color:#475467;line-height:1.55}
+footer{text-align:center;padding:20px;color:#475467;font-size:14px}
+.wa-float{position:fixed;right:18px;bottom:18px;z-index:999;display:flex;align-items:center;gap:8px;background:#25d366;color:#fff;text-decoration:none;padding:12px 16px;border-radius:999px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+@media(max-width:480px){.wa-float .wa-label{display:none}.wa-float{padding:14px}}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="/static/logo.jpeg" alt="Ayush AI Solutions">
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/products">Products</a>
+    <a href="/pricing">Pricing</a>
+    <a href="/tools">Tools</a>
+    <a href="/contact">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <h1>Free Business Tools</h1>
+  <p>Use our GST calculator, or request a demo of our software.</p>
+
+  <!-- GST CALCULATOR -->
+  <section class="card">
+    <h2>GST Calculator</h2>
+    <label for="g-amt">Amount (₹)</label>
+    <input id="g-amt" type="number" min="0" step="0.01" placeholder="e.g. 10000">
+    <div class="row">
+      <div>
+        <label for="g-rate">GST rate</label>
+        <select id="g-rate">
+          <option value="5">5%</option>
+          <option value="12">12%</option>
+          <option value="18" selected>18%</option>
+          <option value="28">28%</option>
+        </select>
+      </div>
+      <div>
+        <label for="g-mode">Amount is</label>
+        <select id="g-mode">
+          <option value="excl" selected>Without GST</option>
+          <option value="incl">With GST included</option>
+        </select>
+      </div>
+    </div>
+    <label for="g-type">Sale type</label>
+    <select id="g-type">
+      <option value="intra" selected>Same state (CGST + SGST)</option>
+      <option value="inter">Other state (IGST)</option>
+    </select>
+    <table>
+      <tr><td>Taxable value</td><td id="g-base">₹0.00</td></tr>
+      <tr id="g-r1"><td>CGST</td><td id="g-c">₹0.00</td></tr>
+      <tr id="g-r2"><td>SGST</td><td id="g-s">₹0.00</td></tr>
+      <tr id="g-r3" hidden><td>IGST</td><td id="g-i">₹0.00</td></tr>
+      <tr class="tot"><td>Total</td><td id="g-tot">₹0.00</td></tr>
+    </table>
+  </section>
+
+  <!-- ENQUIRY FORM -->
+  <section class="card">
+    <h2>Request a demo</h2>
+    <form id="enq-form" novalidate>
+      <label for="e-name">Your name</label>
+      <input id="e-name" name="name" maxlength="80">
+      <label for="e-phone">Phone / WhatsApp</label>
+      <input id="e-phone" name="phone" type="tel" maxlength="15" placeholder="10-digit mobile number">
+      <label for="e-email">Email (optional)</label>
+      <input id="e-email" name="email" type="email" maxlength="120">
+      <label for="e-prod">Interested in</label>
+      <select id="e-prod" name="product">
+        <option>AI Billing Software</option>
+        <option>Inventory Management</option>
+        <option>Officer's Mess Management</option>
+        <option>Custom Software</option>
+      </select>
+      <label for="e-msg">Message</label>
+      <textarea id="e-msg" name="message" rows="4" maxlength="1000"></textarea>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button type="submit" id="e-btn">Send request</button>
+      <div id="e-out" role="status" aria-live="polite" style="margin-top:12px"></div>
+    </form>
+  </section>
+
+  <!-- FAQ -->
+  <section class="card">
+    <h2>Frequently asked questions</h2>
+    <details>
+      <summary>Can I try the software before buying?</summary>
+      <p>Yes. Request a demo and we will show you the software with your own sample data.</p>
+    </details>
+    <details>
+      <summary>Does the billing software create GST invoices?</summary>
+      <p>Yes. It creates GST invoices with CGST, SGST and IGST, and you can print or save them as PDF.</p>
+    </details>
+    <details>
+      <summary>Can you build software made for my business?</summary>
+      <p>Yes. Send your requirement through the form above and we will reply with a plan and price.</p>
+    </details>
+    <details>
+      <summary>What support do I get after buying?</summary>
+      <p>Write your real support hours here, for example phone and WhatsApp, Monday to Saturday.</p>
+    </details>
+  </section>
+</main>
+
+<footer>© 2026 Ayush AI Solutions | 9459200809 | ayush0695792@rediffmail.com</footer>
+
+<!-- WHATSAPP BUTTON -->
+<a class="wa-float" target="_blank" rel="noopener"
+   href="https://wa.me/919459200809?text=Hello%20Ayush%20AI%20Solutions%2C%20I%20want%20a%20demo."
+   aria-label="Chat on WhatsApp">
+  <span aria-hidden="true">💬</span><span class="wa-label">Chat with us</span>
+</a>
+
+<script>
+/* GST calculator */
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var f=function(n){return '₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})};
+  function calc(){
+    var a=parseFloat($('g-amt').value)||0, r=parseFloat($('g-rate').value);
+    var incl=$('g-mode').value==='incl', inter=$('g-type').value==='inter';
+    var base=incl ? a*100/(100+r) : a;
+    var gst=incl ? a-base : a*r/100;
+    $('g-base').textContent=f(base);
+    $('g-c').textContent=f(gst/2);
+    $('g-s').textContent=f(gst/2);
+    $('g-i').textContent=f(gst);
+    $('g-tot').textContent=f(base+gst);
+    $('g-r1').hidden=inter; $('g-r2').hidden=inter; $('g-r3').hidden=!inter;
+  }
+  ['g-amt','g-rate','g-mode','g-type'].forEach(function(i){
+    $(i).addEventListener('input',calc);
+    $(i).addEventListener('change',calc);
+  });
+  calc();
+})();
+
+/* Enquiry form */
+(function(){
+  var form=document.getElementById('enq-form');
+  var btn=document.getElementById('e-btn');
+  var out=document.getElementById('e-out');
+  function show(t,ok){out.textContent=t;out.className=ok?'ok':'err'}
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var d=Object.fromEntries(new FormData(form).entries());
+    if(!d.name.trim()) return show('Please enter your name.',false);
+    if(!/^[6-9]\d{9}$/.test(d.phone.replace(/\D/g,'').slice(-10))) return show('Please enter a valid 10-digit mobile number.',false);
+    btn.disabled=true; show('Sending...',true);
+    try{
+      var res=await fetch('/api/enquiry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+      var j=await res.json();
+      if(res.ok && j.ok){form.reset(); show('Thank you. We will contact you soon.',true)}
+      else show(j.error||'Could not send. Please call 9459200809.',false);
+    }catch(err){show('Network problem. Please call 9459200809.',false)}
+    btn.disabled=false;
+  });
+})();
+</script>
+</body>
+</html>
