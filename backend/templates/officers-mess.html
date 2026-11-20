@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Officer's Mess Management | Ayush AI Solutions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .page-hero {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            text-align: center;
+            padding: 60px 20px 50px;
+        }
+        .page-hero h1 {
+            font-size: 2.4rem;
+            margin-bottom: 12px;
+        }
+        .page-hero p {
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            color: #1e293b;
+            margin: 40px 0 20px;
+            border-left: 5px solid #007bff;
+            padding-left: 15px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 22px;
+            margin-bottom: 30px;
+        }
+        .feature-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+        }
+        .feature-card h3 {
+            margin: 0 0 12px;
+            color: #007bff;
+            font-size: 1.15rem;
+        }
+        .feature-card ul {
+            margin: 0;
+            padding-left: 18px;
+            color: #475569;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .highlight-box {
+            background: #f0f7ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .highlight-box h3 {
+            margin-top: 0;
+            color: #1e40af;
+        }
+        .cta-box {
+            text-align: center;
+            background: #0f172a;
+            color: white;
+            padding: 40px 20px;
+            border-radius: 12px;
+            margin: 50px 0 20px;
+        }
+        .cta-box h2 {
+            margin: 0 0 12px;
+        }
+        .cta-box p {
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+        .btn-primary {
+            display: inline-block;
+            background: #fbbf24;
+            color: #000;
+            padding: 14px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        .btn-primary:hover {
+            background: #f59e0b;
+        }
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #1e293b;
+            color: #94a3b8;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; background: white;">
+    <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <a href="/">
+            <img src="{{ url_for('static', filename='logo.jpeg') }}" alt="Ayush AI Solutions" style="height: 48px;">
+        </a>
+        <nav style="display: flex; gap: 18px; flex-wrap: wrap;">
+            <a href="/" style="text-decoration: none; color: #334155;">Home</a>
+            <a href="/about" style="text-decoration: none; color: #334155;">About</a>
+            <a href="/products" style="text-decoration: none; color: #007bff; font-weight: 600;">Products</a>
+            <a href="/pricing" style="text-decoration: none; color: #334155;">Pricing</a>
+            <a href="/contact" style="text-decoration: none; color: #334155;">Contact</a>
+            <a href="/login" style="text-decoration: none; background: #007bff; color: white; padding: 6px 14px; border-radius: 6px;">Login</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="page-hero">
+    <h1>Officer's Mess Management System</h1>
+    <p>Complete digital solution designed for Defence & CAPF Officers’ Messes — full ration control, billing, guest rooms, attendance and permanent audit-ready records.</p>
+</section>
+
+<div class="container">
+
+    <!-- Why this system -->
+    <div class="highlight-box">
+        <h3>Built specifically for Defence & CAPF</h3>
+        <p style="margin:0; color:#1e3a8a; line-height:1.6;">
+            This system follows the exact requirements of military and CAPF messes. Every transaction is permanently stored with full audit trail so that records are always ready for Board of Officers, Audit, and higher headquarters inspection.
+        </p>
+    </div>
+
+    <!-- Feature Sections -->
+    <h2 class="section-title">Complete Feature List</h2>
+
+    <div class="feature-grid">
+
+        <!-- 1. Member Management -->
+        <div class="feature-card">
+            <span class="badge">Core Module</span>
+            <h3>1. Member & Personnel Management</h3>
+            <ul>
+                <li>Living-in / Living-out classification</li>
+                <li>Rank-wise hierarchy & privileges</li>
+                <li>Posting in/out & temporary duty tracking</li>
+                <li>Family / dependent details</li>
+                <li>Role-based access (Mess President, Secretary, Officer, Store Keeper, Members)</li>
+            </ul>
+        </div>
+
+        <!-- 2. Ration & Inventory -->
+        <div class="feature-card">
+            <span class="badge">Most Critical</span>
+            <h3>2. Ration & Inventory Management</h3>
+            <ul>
+                <li>Separate ledgers: Dry Ration, Fresh, Perishables, Bar/Liquor</li>
+                <li>Opening → Receipt → Issue → Closing Stock</li>
+                <li>Daily / weekly indent system</li>
+                <li>Low stock alerts & automatic reorder suggestions</li>
+                <li>Wastage, surplus & condemnation register</li>
+                <li>Supplier & local purchase tracking</li>
+            </ul>
+        </div>
+
+        <!-- 3. Messing & Attendance -->
+        <div class="feature-card">
+            <span class="badge">Daily Operations</span>
+            <h3>3. Messing & Attendance</h3>
+            <ul>
+                <li>Daily headcount for Breakfast, Lunch, Dinner, Snacks</li>
+                <li>Guest meal tracking (member guest / mess guest)</li>
+                <li>Extra Messing Charge (EMC) calculation</li>
+                <li>Special / medical diet marking</li>
+                <li>Function & party catering booking</li>
+            </ul>
+        </div>
+
+        <!-- 4. Guest Rooms -->
+        <div class="feature-card">
+            <span class="badge">Accommodation</span>
+            <h3>4. Guest Room Management</h3>
+            <ul>
+                <li>Real-time room availability</li>
+                <li>Booking by members & temporary duty officers</li>
+                <li>Check-in / Check-out with automatic charges</li>
+                <li>Guest register (mandatory for military messes)</li>
+                <li>Priority rules based on seniority / duty</li>
+            </ul>
+        </div>
+
+        <!-- 5. Billing -->
+        <div class="feature-card">
+            <span class="badge">Accounts</span>
+            <h3>5. Billing & Accounts</h3>
+            <ul>
+                <li>Automatic monthly mess bill generation</li>
+                <li>Separate billing for messing, bar, guest room & functions</li>
+                <li>Credit system & dues tracking</li>
+                <li>Mess Fund / Committee Fund accounting</li>
+                <li>Payment receipts & outstanding reports</li>
+            </ul>
+        </div>
+
+        <!-- 6. Full Record Storage -->
+        <div class="feature-card">
+            <span class="badge">Audit Ready</span>
+            <h3>6. Full Permanent Record Storage</h3>
+            <ul>
+                <li>Every transaction stored permanently</li>
+                <li>Immutable audit trail (who, when, what changed)</li>
+                <li>7–10 years data retention</li>
+                <li>Locked monthly closings after verification</li>
+                <li>Complete history available for any past period</li>
+            </ul>
+        </div>
+
+        <!-- 7. Reports -->
+        <div class="feature-card">
+            <span class="badge">Official Reports</span>
+            <h3>7. Reports & Export</h3>
+            <ul>
+                <li>Monthly Ration Account Sheet</li>
+                <li>Stock Ledger (item-wise)</li>
+                <li>Member-wise Billing Summary</li>
+                <li>Consumption & Wastage Analysis</li>
+                <li>Guest Room Occupancy Report</li>
+                <li>One-click Excel / PDF export for Audit & Board of Officers</li>
+            </ul>
+        </div>
+
+        <!-- 8. Security -->
+        <div class="feature-card">
+            <span class="badge">Security</span>
+            <h3>8. Security & Administration</h3>
+            <ul>
+                <li>Role-based hierarchical permissions</li>
+                <li>Unit / Mess level data isolation</li>
+                <li>Complete activity logs</li>
+                <li>Secure login with strong password policy</li>
+                <li>Daily automatic backups + manual restore</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-box">
+        <h2>Ready to digitize your Officers’ Mess?</h2>
+        <p>Get a live demo with your own sample data. Customization available as per unit requirements.</p>
+        <a href="/contact" class="btn-primary">Request Demo / Contact Us</a>
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2026 Ayush AI Solutions • Kangra, Himachal Pradesh</p>
+    <p>Phone: 9459200809 | Email: ayush0695792@rediffmail.com</p>
+</footer>
+
+</body>
+</html>
