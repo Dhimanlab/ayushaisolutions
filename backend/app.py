@@ -252,6 +252,205 @@ def chat_pdf():
 @app.route('/programs/officers-mess')
 def officers_mess():
     return render_template('officers-mess.html')
+
+# ================= OFFICER'S MESS MANAGEMENT ERP (ALL 8 MODULES) =================
+import csv
+import io
+from datetime import datetime
+from flask import Response
+
+class MessMember(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    service_no = db.Column(db.String(50), nullable=False)
+    rank = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    living_status = db.Column(db.String(40), default='Living-In')
+    monthly_sub = db.Column(db.Float, default=1500.0)
+
+class MessRation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(50), default='Dry Ration')
+    item_name = db.Column(db.String(100), nullable=False)
+    unit = db.Column(db.String(20), default='kg')
+    opening = db.Column(db.Float, default=0.0)
+    receipt = db.Column(db.Float, default=0.0)
+    issued = db.Column(db.Float, default=0.0)
+    rate = db.Column(db.Float, default=0.0)
+    min_level = db.Column(db.Float, default=10.0)
+
+class MessingLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer, nullable=False)
+    officer_name = db.Column(db.String(120), nullable=False)
+    meal_type = db.Column(db.String(80), nullable=False)
+    headcount = db.Column(db.Integer, default=1)
+    amount = db.Column(db.Float, default=0.0)
+    remarks = db.Column(db.String(200), default='')
+    date_str = db.Column(db.String(30), default=lambda: datetime.utcnow().strftime('%Y-%m-%d'))
+
+class MessGuestRoom(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    room_no = db.Column(db.String(30), nullable=False)
+    member_id = db.Column(db.Integer, nullable=False)
+    officer_name = db.Column(db.String(120), nullable=False)
+    guest_name = db.Column(db.String(120), nullable=False)
+    days = db.Column(db.Integer, default=1)
+    tariff = db.Column(db.Float, default=800.0)
+    status = db.Column(db.String(30), default='Occupied')
+
+class MessAuditLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    module = db.Column(db.String(50), nullable=False)
+    details = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.String(40), default=lambda: datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
+
+with app.app_context():
+    db.create_all()
+
+def log_mess_audit(module, details):
+    entry = MessAuditLog(module=module, details=details)
+    db.session.add(entry)
+    db.session.commit()
+
+@app.route('/officers-mess/app')
+def officers_mess_app():
+    members = MessMember.query.all()
+    rations = MessRation.query.all()
+    messing_logs = MessingLog.query.order_by(MessingLog.id.desc()).all()
+    rooms = MessGuestRoom.query.order_by(MessGuestRoom.id.desc()).all()
+    audits = MessAuditLog.query.order_by(MessAuditLog.id.desc()).limit(50).all()
+
+    low_stock_count = sum(1 for r in rations if (r.opening + r.receipt - r.issued) <= r.min_level)
+    total_messing = sum(l.amount for l in messing_logs)
+    occupied_rooms = sum(1 for rm in rooms if rm.status == 'Occupied')
+
+    bills = []
+    total_billing = 0.0
+    for m in members:
+        m_mess = sum(l.amount for l in messing_logs if l.member_id == m.id)
+        m_room = sum((rm.days * rm.tariff) for rm in rooms if rm.member_id == m.id)
+        tot = m.monthly_sub + m_mess + m_room
+        total_billing += tot
+        bills.append({
+            'service_no': m.service_no,
+            'officer_name': f"{m.rank} {m.name}",
+            'sub': m.monthly_sub,
+            'messing': m_mess,
+            'room': m_room,
+            'total': tot
+        })
+
+    return render_template(
+        'officers-mess-app.html',
+        members=members,
+        rations=rations,
+        messing_logs=messing_logs,
+        rooms=rooms,
+        audits=audits,
+        low_stock_count=low_stock_count,
+        total_messing=total_messing,
+        occupied_rooms=occupied_rooms,
+        bills=bills,
+        total_billing=total_billing
+    )
+
+@app.route('/officers-mess/add-member', methods=['POST'])
+def mess_add_member():
+    m = MessMember(
+        service_no=request.form.get('service_no'),
+        rank=request.form.get('rank'),
+        name=request.form.get('name'),
+        living_status=request.form.get('living_status'),
+        monthly_sub=float(request.form.get('monthly_sub') or 1500)
+    )
+    db.session.add(m)
+    db.session.commit()
+    log_mess_audit('Members', f"Added {m.rank} {m.name} ({m.service_no})")
+    return redirect('/officers-mess/app')
+
+@app.route('/officers-mess/delete-member/<int:mid>')
+def mess_delete_member(mid):
+    m = MessMember.query.get_or_404(mid)
+    log_mess_audit('Members', f"Removed {m.rank} {m.name} ({m.service_no})")
+    db.session.delete(m)
+    db.session.commit()
+    return redirect('/officers-mess/app')
+
+@app.route('/officers-mess/add-ration', methods=['POST'])
+def mess_add_ration():
+    r = MessRation(
+        category=request.form.get('category'),
+        item_name=request.form.get('item_name'),
+        unit=request.form.get('unit'),
+        opening=float(request.form.get('opening') or 0),
+        receipt=float(request.form.get('receipt') or 0),
+        issued=float(request.form.get('issued') or 0),
+        rate=float(request.form.get('rate') or 0),
+        min_level=float(request.form.get('min_level') or 10)
+    )
+    db.session.add(r)
+    db.session.commit()
+    log_mess_audit('Ration', f"Updated {r.item_name} ({r.category})")
+    return redirect('/officers-mess/app')
+
+@app.route('/officers-mess/add-messing', methods=['POST'])
+def mess_add_messing():
+    mid = int(request.form.get('member_id'))
+    m = MessMember.query.get(mid)
+    officer_name = f"{m.rank} {m.name}" if m else "Unknown Officer"
+    log = MessingLog(
+        member_id=mid,
+        officer_name=officer_name,
+        meal_type=request.form.get('meal_type'),
+        headcount=int(request.form.get('headcount') or 1),
+        amount=float(request.form.get('amount') or 0),
+        remarks=request.form.get('remarks') or ''
+    )
+    db.session.add(log)
+    db.session.commit()
+    log_mess_audit('Messing', f"{officer_name} - {log.meal_type}: ₹{log.amount}")
+    return redirect('/officers-mess/app')
+
+@app.route('/officers-mess/book-room', methods=['POST'])
+def mess_book_room():
+    mid = int(request.form.get('member_id'))
+    m = MessMember.query.get(mid)
+    officer_name = f"{m.rank} {m.name}" if m else "Unknown Officer"
+    rm = MessGuestRoom(
+        room_no=request.form.get('room_no'),
+        member_id=mid,
+        officer_name=officer_name,
+        guest_name=request.form.get('guest_name'),
+        days=int(request.form.get('days') or 1),
+        tariff=float(request.form.get('tariff') or 800),
+        status='Occupied'
+    )
+    db.session.add(rm)
+    db.session.commit()
+    log_mess_audit('Guest Room', f"Checked in {rm.guest_name} to Room {rm.room_no}")
+    return redirect('/officers-mess/app')
+
+@app.route('/officers-mess/checkout-room/<int:rid>')
+def mess_checkout_room(rid):
+    rm = MessGuestRoom.query.get_or_404(rid)
+    rm.status = 'Checked Out'
+    db.session.commit()
+    log_mess_audit('Guest Room', f"Checked out {rm.guest_name} from Room {rm.room_no}")
+    return redirect('/officers-mess/app')
+
+@app.route('/officers-mess/export-csv')
+def mess_export_csv():
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Service No', 'Officer Name', 'Status', 'Base Subscription (INR)', 'Messing & EMC (INR)', 'Room Charges (INR)', 'Total Bill (INR)'])
+    members = MessMember.query.all()
+    messing_logs = MessingLog.query.all()
+    rooms = MessGuestRoom.query.all()
+    for m in members:
+        m_mess = sum(l.amount for l in messing_logs if l.member_id == m.id)
+        m_room = sum((rm.days * rm.tariff) for rm in rooms if rm.member_id == m.id)
+        writer.writerow([m.service_no, f"{m.rank} {m.name}", m.living_status, m.monthly_sub, m_mess, m_room, m.monthly_sub + m_mess + m_room])
+    return Response(output.getvalue(), mimetype="text/csv", headers={"Content-Disposition": "attachment;filename=officers_mess_billing_report.csv"})
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
