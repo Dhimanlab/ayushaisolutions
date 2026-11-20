@@ -249,7 +249,9 @@ def chat_pdf():
     except Exception as e:
         print(f"Chat Error: {e}")
         return jsonify({'error': 'AI service failed.'}), 500
-
+@app.route('/programs/officers-mess')
+def officers_mess():
+    return render_template('officers-mess.html')
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
