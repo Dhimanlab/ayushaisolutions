@@ -105,7 +105,9 @@
                 <h3>Officer's Mess Management</h3>
                 <p>Advanced system to track military and institutional ration accounts, automate monthly expenditure sheets, manage guest logs, and optimize catering workflows securely.</p>
             </div>
-            <a href="/contact" class="btn-inquire">Inquire Now</a>
+           @app.route('/programs/officers-mess')
+def officers_mess():
+    return render_template('officers-mess.html')
         </div>
 
         <!-- Product 2 -->
