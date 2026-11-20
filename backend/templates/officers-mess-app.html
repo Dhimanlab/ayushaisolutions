@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Officer's Mess Management System | Ayush AI Solutions</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --gold: #f59e0b;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #fff;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    header h1 { font-size: 1.35rem; display: flex; align-items: center; gap: 10px; }
+    .badge-unit { background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; }
+    .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .role-select {
+      padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(15,23,42,0.7); color: #fff; font-size: 0.85rem;
+    }
+    .btn {
+      padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer;
+      font-weight: 600; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-gold { background: var(--gold); color: #0f172a; }
+    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; padding: 4px 8px; font-size: 0.78rem; }
+    .btn-success { background: var(--success); color: #fff; padding: 4px 8px; font-size: 0.78rem; }
+
+    .container { max-width: 1360px; margin: 22px auto; padding: 0 18px; }
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px; margin-bottom: 22px;
+    }
+    .kpi-card {
+      background: var(--card); padding: 18px; border-radius: 10px;
+      border-left: 4px solid var(--accent); box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .kpi-card h4 { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .kpi-card .val { font-size: 1.65rem; font-weight: 700; margin-top: 6px; color: var(--primary); }
+
+    .tabs {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 18px;
+      border-bottom: 2px solid var(--border);
+    }
+    .tab-btn {
+      padding: 10px 16px; background: #e2e8f0; border: none; border-radius: 8px 8px 0 0;
+      cursor: pointer; font-weight: 600; color: var(--text); white-space: nowrap; transition: 0.2s;
+    }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+
+    .panel { display: none; background: var(--card); padding: 22px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .panel.active { display: block; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .panel-header h2 { font-size: 1.15rem; color: var(--primary); }
+
+    form.grid-form {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;
+    }
+    input, select {
+      width: 100%; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.88rem; }
+    th, td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: #f8fafc; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.76rem; }
+    tr:hover { background: #f8fafc; }
+
+    .pill { padding: 3px 9px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .pill-green { background: #dcfce7; color: #166534; }
+    .pill-red { background: #fee2e2; color: #991b1b; }
+    .pill-amber { background: #fef3c7; color: #92400e; }
+    .pill-blue { background: #dbeafe; color: #1e40af; }
+
+    .room-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 14px; }
+    .room-card { border: 1px solid var(--border); border-radius: 8px; padding: 15px; background: #f8fafc; }
+
+    @media print {
+      header, .tabs, form, .no-print { display: none !important; }
+      .panel { display: block !important; box-shadow: none; margin-bottom: 24px; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🎖️ Officer's Mess Management System <span class="badge-unit">Unit ERP • Live</span></h1>
+  </div>
+  <div class="header-actions">
+    <select id="activeRole" class="role-select" title="Module 8: Role-Based Access">
+      <option value="Mess President">Role: Mess President (Full Access)</option>
+      <option value="Mess Secretary">Role: Mess Secretary</option>
+      <option value="Store Keeper">Role: Store Keeper</option>
+    </select>
+    <a href="/officers-mess/export-csv" class="btn btn-gold">📥 Export CSV</a>
+    <button onclick="window.print()" class="btn btn-primary">🖨️ Print Sheet</button>
+    <a href="/programs/officers-mess" class="btn btn-outline">← Back</a>
+  </div>
+</header>
+
+<div class="container">
+  <!-- KPI SUMMARY -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <h4>1. Active Mess Members</h4>
+      <div class="val">{{ members|length }}</div>
+    </div>
+    <div class="kpi-card" style="border-color: var(--danger);">
+      <h4>2. Low-Stock Ration Alerts</h4>
+      <div class="val">{{ low_stock_count }}</div>
+    </div>
+    <div class="kpi-card" style="border-color: var(--gold);">
+      <h4>3. Messing & EMC Total</h4>
+      <div class="val">₹{{ "%.2f"|format(total_messing) }}</div>
+    </div>
+    <div class="kpi-card" style="border-color: var(--success);">
+      <h4>4. Occupied Guest Rooms</h4>
+      <div class="val">{{ occupied_rooms }} / {{ rooms|length }}</div>
+    </div>
+    <div class="kpi-card" style="border-color: #7c3aed;">
+      <h4>5. Total Monthly Billing</h4>
+      <div class="val">₹{{ "%.2f"|format(total_billing) }}</div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION TABS FOR ALL 8 MODULES -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="openTab(event, 'm1')">1. Members & Personnel</button>
+    <button class="tab-btn" onclick="openTab(event, 'm2')">2. Ration & Inventory</button>
+    <button class="tab-btn" onclick="openTab(event, 'm3')">3. Messing & Attendance</button>
+    <button class="tab-btn" onclick="openTab(event, 'm4')">4. Guest Rooms</button>
+    <button class="tab-btn" onclick="openTab(event, 'm5')">5. Billing & Accounts</button>
+    <button class="tab-btn" onclick="openTab(event, 'm6')">6–8. Audit Trail & Reports</button>
+  </div>
+
+  <!-- MODULE 1: MEMBERS -->
+  <div id="m1" class="panel active">
+    <div class="panel-header">
+      <h2>1. Member & Personnel Management</h2>
+    </div>
+    <form class="grid-form" action="/officers-mess/add-member" method="POST">
+      <input type="text" name="service_no" placeholder="Service No. (e.g. IC-74821)" required />
+      <select name="rank" required>
+        <option value="Lt">Lieutenant (Lt)</option>
+        <option value="Capt">Captain (Capt)</option>
+        <option value="Maj" selected>Major (Maj)</option>
+        <option value="Lt Col">Lieutenant Colonel (Lt Col)</option>
+        <option value="Col">Colonel (Col)</option>
+        <option value="Brig">Brigadier (Brig)</option>
+      </select>
+      <input type="text" name="name" placeholder="Officer Full Name" required />
+      <select name="living_status">
+        <option value="Living-In">Living-In Officer</option>
+        <option value="Living-Out">Living-Out Officer</option>
+        <option value="Temp Duty">Temporary Duty (TD)</option>
+      </select>
+      <input type="number" step="0.01" name="monthly_sub" placeholder="Base Subscription (₹)" value="1500" required />
+      <button type="submit" class="btn btn-primary">+ Add Officer</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Service No</th><th>Rank & Name</th><th>Status</th><th>Base Sub (₹)</th><th class="no-print">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td><strong>{{ m.service_no }}</strong></td>
+          <td>{{ m.rank }} {{ m.name }}</td>
+          <td><span class="pill pill-blue">{{ m.living_status }}</span></td>
+          <td>₹{{ "%.2f"|format(m.monthly_sub) }}</td>
+          <td class="no-print">
+            <a href="/officers-mess/delete-member/{{ m.id }}" class="btn btn-danger">Remove</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No officers added yet. Add your first officer above.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODULE 2: RATION & INVENTORY -->
+  <div id="m2" class="panel">
+    <div class="panel-header">
+      <h2>2. Ration & Inventory Management (Opening → Receipt → Issue → Closing)</h2>
+    </div>
+    <form class="grid-form" action="/officers-mess/add-ration" method="POST">
+      <select name="category">
+        <option value="Dry Ration">Dry Ration</option>
+        <option value="Fresh">Fresh Ration</option>
+        <option value="Perishables">Perishables</option>
+        <option value="Bar / Liquor">Bar / Liquor</option>
+      </select><input type="text" name="item_name" placeholder="Item Name (e.g. Basmati Rice)" required />
+      <input type="text" name="unit" placeholder="Unit (kg / L / pcs)" value="kg" required />
+      <input type="number" step="0.01" name="opening" placeholder="Opening Stock" required />
+      <input type="number" step="0.01" name="receipt" placeholder="Receipt (+)" value="0" required />
+      <input type="number" step="0.01" name="issued" placeholder="Issued (-)" value="0" required />
+      <input type="number" step="0.01" name="rate" placeholder="Rate per Unit (₹)" required />
+      <input type="number" step="0.01" name="min_level" placeholder="Min Alert Level" value="10" required />
+      <button type="submit" class="btn btn-primary">+ Record Stock</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th><th>Item</th><th>Opening</th><th>Receipt</th><th>Issued</th><th>Closing Stock</th><th>Stock Value</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rations %}
+        {% set closing = r.opening + r.receipt - r.issued %}
+        <tr>
+          <td>{{ r.category }}</td>
+          <td><strong>{{ r.item_name }}</strong></td>
+          <td>{{ r.opening }} {{ r.unit }}</td>
+          <td>+{{ r.receipt }}</td>
+          <td>-{{ r.issued }}</td>
+          <td><strong>{{ "%.2f"|format(closing) }} {{ r.unit }}</strong></td>
+          <td>₹{{ "%.2f"|format(closing * r.rate) }}</td>
+          <td>
+            {% if closing <= r.min_level %}
+              <span class="pill pill-red">Low Stock — Reorder!</span>
+            {% else %}
+              <span class="pill pill-green">Optimal</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8">No ration entries recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODULE 3: MESSING & ATTENDANCE -->
+  <div id="m3" class="panel">
+    <div class="panel-header">
+      <h2>3. Daily Messing, Guest Meals & Extra Messing Charge (EMC)</h2>
+    </div>
+    <form class="grid-form" action="/officers-mess/add-messing" method="POST">
+      <select name="member_id" required>
+        <option value="">Select Officer...</option>
+        {% for m in members %}
+          <option value="{{ m.id }}">{{ m.rank }} {{ m.name }} ({{ m.service_no }})</option>
+        {% endfor %}
+      </select>
+      <select name="meal_type">
+        <option value="Daily Messing (B/L/D)">Daily Messing (Breakfast/Lunch/Dinner)</option>
+        <option value="Guest Meal">Guest Meal</option>
+        <option value="Extra Messing (EMC)">Extra Messing Charge (EMC)</option>
+        <option value="Bar / Party Catering">Bar / Party Catering</option>
+        <option value="Special / Medical Diet">Special / Medical Diet</option>
+      </select>
+      <input type="number" name="headcount" placeholder="Headcount / Qty" value="1" required />
+      <input type="number" step="0.01" name="amount" placeholder="Total Charge (₹)" required />
+      <input type="text" name="remarks" placeholder="Notes (e.g. 2 Dinner Guests)" />
+      <button type="submit" class="btn btn-primary">+ Log Messing</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Officer</th><th>Type</th><th>Headcount</th><th>Charge (₹)</th><th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in messing_logs %}
+        <tr>
+          <td>{{ log.date_str }}</td>
+          <td><strong>{{ log.officer_name }}</strong></td>
+          <td><span class="pill pill-amber">{{ log.meal_type }}</span></td>
+          <td>{{ log.headcount }}</td>
+          <td>₹{{ "%.2f"|format(log.amount) }}</td>
+          <td>{{ log.remarks }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6">No messing or guest logs recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODULE 4: GUEST ROOMS -->
+  <div id="m4" class="panel">
+    <div class="panel-header">
+      <h2>4. Guest Room & Accommodation Register</h2>
+    </div>
+    <form class="grid-form" action="/officers-mess/book-room" method="POST">
+      <input type="text" name="room_no" placeholder="Room No (e.g. VIP-1, Suite-2)" required />
+      <select name="member_id" required>
+        <option value="">Booked By / Host Officer...</option>
+        {% for m in members %}
+          <option value="{{ m.id }}">{{ m.rank }} {{ m.name }}</option>
+        {% endfor %}
+      </select>
+      <input type="text" name="guest_name" placeholder="Visiting Guest / TD Officer Name" required />
+      <input type="number" name="days" placeholder="No. of Nights" value="1" required />
+      <input type="number" step="0.01" name="tariff" placeholder="Tariff per Night (₹)" value="800" required />
+      <button type="submit" class="btn btn-primary">+ Check-In Guest</button>
+    </form>
+    <div class="room-grid">
+      {% for rm in rooms %}
+      <div class="room-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <strong>Room {{ rm.room_no }}</strong>
+          {% if rm.status == 'Occupied' %}
+            <span class="pill pill-red">Occupied</span>
+          {% else %}
+            <span class="pill pill-green">Available</span>
+          {% endif %}
+        </div>
+        <p style="font-size:0.85rem; color:var(--muted);">Guest: <strong>{{ rm.guest_name }}</strong></p>
+        <p style="font-size:0.85rem; color:var(--muted);">Host: {{ rm.officer_name }}</p>
+        <p style="font-size:0.88rem; margin:6px 0;">{{ rm.days }} Night(s) × ₹{{ rm.tariff }} = <strong>₹{{ "%.2f"|format(rm.days * rm.tariff) }}</strong></p>
+        {% if rm.status == 'Occupied' %}
+          <a href="/officers-mess/checkout-room/{{ rm.id }}" class="btn btn-success no-print">Check-Out & Post Bill</a>
+        {% endif %}
+      </div>
+      {% else %}
+      <p>No guest room bookings yet. Check in a guest above.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- MODULE 5: BILLING & ACCOUNTS -->
+  <div id="m5" class="panel">
+    <div class="panel-header">
+      <h2>5. Automatic Monthly Mess Bill Generation & Dues Summary</h2>
+      <button onclick="window.print()" class="btn btn-primary no-print">🖨️ Print Official Bills</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Service No</th><th>Officer</th><th>Base Sub</th><th>Messing & EMC</th><th>Room Charges</th><th>Total Payable</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bills %}
+        <tr>
+          <td>{{ b.service_no }}</td>
+          <td><strong>{{ b.officer_name }}</strong></td>
+          <td>₹{{ "%.2f"|format(b.sub) }}</td>
+          <td>₹{{ "%.2f"|format(b.messing) }}</td>
+          <td>₹{{ "%.2f"|format(b.room) }}</td>
+          <td><strong style="color:var(--accent); font-size:1rem;">₹{{ "%.2f"|format(b.total) }}</strong></td>
+          <td><span class="pill pill-amber">Pending Audit</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">Add officers in Tab 1 to auto-generate monthly mess bills.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODULES 6-8: AUDIT TRAIL & REPORTS -->
+  <div id="m6" class="panel">
+    <div class="panel-header">
+      <h2>6–8. Permanent Audit Trail, Activity Logs & Official Exports</h2>
+      <a href="/officers-mess/export-csv" class="btn btn-gold no-print">📥 Download Full CSV Ledger</a>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Timestamp (UTC)</th><th>Module</th><th>Action & Audit Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in audits %}
+        <tr>
+          <td>{{ a.timestamp }}</td>
+          <td><span class="pill pill-blue">{{ a.module }}</span></td>
+          <td>{{ a.details }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3">System initialized. All future changes are permanently logged here.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function openTab(evt, tabId) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    evt.currentTarget.classList.add('active');
+  }
+</script>
+</body>
+</html>
